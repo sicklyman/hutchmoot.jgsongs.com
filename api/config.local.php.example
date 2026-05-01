@@ -1,0 +1,20 @@
+<?php
+// Copy this file to config.local.php on the server and fill in real values.
+// config.local.php is gitignored — never commit it.
+
+putenv('DB_HOST=localhost');
+putenv('DB_NAME=hutchmoot');
+putenv('DB_USER=your_db_username');
+putenv('DB_PASS=your_db_password');
+
+putenv('R2_ACCOUNT_ID=your_account_id');
+putenv('R2_ACCESS_KEY=your_access_key_id');
+putenv('R2_SECRET_KEY=your_secret_access_key');
+putenv('R2_BUCKET=jgsongs');
+putenv('R2_PUBLIC_URL=https://pub-XXXX.r2.dev');
+
+putenv('ADMIN_PIN=123456');   // change before the event
+putenv('SUBMIT_PIN=654321');  // change before the event
+
+putenv('GATE_OPEN_TIME=2026-05-08 15:30:00');
+putenv('GATE_TIMEZONE=Europe/London');

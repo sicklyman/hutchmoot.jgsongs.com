@@ -1,0 +1,13 @@
+# Block direct browser access to shared helper files
+<Files "config.php">
+  Order allow,deny
+  Deny from all
+</Files>
+<Files "db.php">
+  Order allow,deny
+  Deny from all
+</Files>
+<Files "r2.php">
+  Order allow,deny
+  Deny from all
+</Files>
