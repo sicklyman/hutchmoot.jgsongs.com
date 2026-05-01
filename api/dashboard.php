@@ -27,10 +27,11 @@ foreach ($groups as &$group) {
         GROUP BY experience_level
     ");
     $s->execute([$group['id']]);
-    $group['levels'] = [];
+    $levels = [];
     foreach ($s->fetchAll() as $row) {
-        $group['levels'][$row['experience_level']] = (int)$row['cnt'];
+        $levels[$row['experience_level']] = (int)$row['cnt'];
     }
+    $group['levels'] = (object)$levels;
     $group['checkin_count'] = (int)$group['checkin_count'];
     $group['max_size']      = (int)$group['max_size'];
 }
