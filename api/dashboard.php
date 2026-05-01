@@ -8,6 +8,8 @@ require_admin();
 
 $db = db();
 
+$pending_count = (int)$db->query("SELECT COUNT(*) FROM checkins WHERE group_id IS NULL")->fetchColumn();
+
 $stmt = $db->query("
     SELECT g.id, g.name, g.max_size, g.sort_order,
            a.title AS artwork_title, a.location AS artwork_location,
@@ -46,4 +48,4 @@ foreach ($groups as &$group) {
 }
 unset($group);
 
-json_out($groups);
+json_out(['pending_count' => $pending_count, 'groups' => $groups]);
