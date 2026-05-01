@@ -61,4 +61,13 @@ if ($method === 'POST') {
     json_out(['ok' => true, 'id' => $id]);
 }
 
+if ($method === 'DELETE') {
+    require_admin();
+    $body = json_decode(file_get_contents('php://input'), true) ?? [];
+    $id   = (int)($body['id'] ?? 0);
+    if (!$id) json_error('id required');
+    db()->prepare("DELETE FROM artworks WHERE id=?")->execute([$id]);
+    json_out(['ok' => true]);
+}
+
 json_error('Method not allowed', 405);
