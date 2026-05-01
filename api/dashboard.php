@@ -32,6 +32,15 @@ foreach ($groups as &$group) {
         $levels[$row['experience_level']] = (int)$row['cnt'];
     }
     $group['levels'] = (object)$levels;
+
+    $m = $db->prepare("
+        SELECT first_name, last_initial, experience_level
+        FROM checkins WHERE group_id = ?
+        ORDER BY checked_in_at
+    ");
+    $m->execute([$group['id']]);
+    $group['members'] = $m->fetchAll();
+
     $group['checkin_count'] = (int)$group['checkin_count'];
     $group['max_size']      = (int)$group['max_size'];
 }

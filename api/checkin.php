@@ -6,8 +6,11 @@ cors_headers();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_error('Method not allowed', 405);
 
-$body  = json_decode(file_get_contents('php://input'), true) ?? [];
-$level = trim($body['level'] ?? '');
+$body         = json_decode(file_get_contents('php://input'), true) ?? [];
+$level        = trim($body['level'] ?? '');
+$first_name   = trim($body['first_name'] ?? '') ?: null;
+$last_initial = strtoupper(trim($body['last_initial'] ?? '')) ?: null;
+$last_initial = $last_initial ? substr($last_initial, 0, 1) : null;
 
 if (!in_array($level, ['beginner', 'some', 'confident'], true)) {
     json_error('level must be beginner, some or confident');
@@ -71,8 +74,8 @@ if (!$assigned) {
 }
 
 // Record the check-in
-$db->prepare("INSERT INTO checkins (group_id, experience_level) VALUES (?, ?)")
-   ->execute([$assigned['id'], $level]);
+$db->prepare("INSERT INTO checkins (group_id, experience_level, first_name, last_initial) VALUES (?, ?, ?, ?)")
+   ->execute([$assigned['id'], $level, $first_name, $last_initial]);
 
 json_out([
     'group_name'   => $assigned['name'],
