@@ -46,28 +46,26 @@ foreach ($groups as &$group) {
 unset($group);
 
 // Assignment algorithm:
-// Always prefer the group with the fewest members (even spread across all groups).
-// Among groups tied on count, prefer one missing this experience level (balance).
-// Final fallback: least-full group ignoring level, then last group if all full (overflow).
+// 1. First non-full group that doesn't yet have this experience level (sequential + balance)
+// 2. Fallback: first non-full group overall (sequential, ignore balance)
+// 3. Final fallback: last group (overflow — event has more attendees than expected)
 
-$non_full = array_filter($groups, fn($g) => $g['checkin_count'] < $g['max_size']);
 $assigned = null;
 
-if ($non_full) {
-    $min_count = min(array_column($non_full, 'checkin_count'));
-    $smallest  = array_filter($non_full, fn($g) => $g['checkin_count'] === $min_count);
+foreach ($groups as $g) {
+    if ($g['checkin_count'] >= $g['max_size']) continue;
+    if (empty($g['levels'][$level])) {
+        $assigned = $g;
+        break;
+    }
+}
 
-    // Among the smallest groups, prefer one missing this experience level
-    foreach ($smallest as $g) {
-        if (empty($g['levels'][$level])) {
+if (!$assigned) {
+    foreach ($groups as $g) {
+        if ($g['checkin_count'] < $g['max_size']) {
             $assigned = $g;
             break;
         }
-    }
-
-    // All smallest groups already have this level — just take the first smallest
-    if (!$assigned) {
-        $assigned = array_values($smallest)[0];
     }
 }
 
