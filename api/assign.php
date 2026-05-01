@@ -37,15 +37,20 @@ foreach ($pending as $p) {
 foreach ($buckets as &$b) shuffle($b);
 unset($b);
 
+// Only open as many groups as can each receive at least 2 people (no solo attendees)
+$nPending     = count($pending);
+$nActive      = max(1, min(count($groups), intdiv($nPending, 2)));
+$activeGroups = array_slice($groups, 0, $nActive);
+
 // Remaining capacity per group
 $capacity = [];
-foreach ($groups as $g) {
+foreach ($activeGroups as $g) {
     $capacity[$g['id']] = max(0, (int)$g['max_size'] - (int)$g['assigned_count']);
 }
 
 // Assign: confident writers first round-robin, then some, then beginner
 $allIds  = array_merge($buckets['confident'], $buckets['some'], $buckets['beginner']);
-$gCount  = count($groups);
+$gCount  = count($activeGroups);
 $gi      = 0;
 $assigned = 0;
 
@@ -54,7 +59,7 @@ $stmt = $db->prepare("UPDATE checkins SET group_id = ? WHERE id = ?");
 foreach ($allIds as $id) {
     $found = false;
     for ($t = 0; $t < $gCount; $t++) {
-        $g = $groups[$gi % $gCount];
+        $g = $activeGroups[$gi % $gCount];
         $gi++;
         if ($capacity[$g['id']] > 0) {
             $stmt->execute([$g['id'], $id]);
@@ -65,8 +70,8 @@ foreach ($allIds as $id) {
         }
     }
     if (!$found) {
-        // Overflow into last group
-        $last = end($groups);
+        // Overflow into last active group
+        $last = end($activeGroups);
         $stmt->execute([$last['id'], $id]);
         $assigned++;
     }
