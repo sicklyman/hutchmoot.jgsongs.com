@@ -254,17 +254,6 @@ const PRESETS = [
   'What will you carry away from this workshop?',
 ];
 
-// ── QR code ────────────────────────────────────────────────────────────────
-(function initQR() {
-  const size = Math.min(Math.floor(window.innerWidth * 0.28), 280);
-  QRCode.toCanvas(
-    document.getElementById('qr-canvas'),
-    'https://hutchmoot.jgsongs.com/reflection',
-    { width: size, margin: 1, color: { dark: '#faf8f5', light: '#0f0f0d' } },
-    function (err) { if (err) console.error('QR error', err); }
-  );
-})();
-
 // ── Keyboard shortcuts ──────────────────────────────────────────────────────
 document.addEventListener('keydown', function (e) {
   const adminOpen  = !document.getElementById('admin-overlay').classList.contains('off');
@@ -542,6 +531,17 @@ function esc(str) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
+
+// ── QR code ────────────────────────────────────────────────────────────────
+try {
+  const size = Math.min(Math.floor(window.innerWidth * 0.28), 280);
+  QRCode.toCanvas(
+    document.getElementById('qr-canvas'),
+    'https://hutchmoot.jgsongs.com/reflection',
+    { width: size, margin: 1, color: { dark: '#faf8f5', light: '#0f0f0d' } },
+    function (err) { if (err) console.error('QR error', err); }
+  );
+} catch (e) { console.warn('QR init failed', e); }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 pollSession();
