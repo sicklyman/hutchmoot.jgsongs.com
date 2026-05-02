@@ -32,6 +32,7 @@ html, body { width: 100%; height: 100%; background: var(--bg); color: var(--text
   border-radius: 12px; border: 2px solid var(--div);
   line-height: 0;
 }
+#qr-img { width: min(28vw, 280px); height: auto; }
 .qr-url  { font-family: var(--sans); font-size: clamp(.85rem, 1.4vw, 1.1rem); color: var(--accent); letter-spacing: .03em; text-align: center; }
 .qr-cta  { font-family: var(--sans); font-size: clamp(.75rem, 1.1vw, .9rem); color: var(--muted); text-align: center; }
 
@@ -156,7 +157,7 @@ textarea.ai { resize: vertical; }
 
 <div id="main">
   <div id="left">
-    <div id="qr-wrap"><canvas id="qr-canvas"></canvas></div>
+    <div id="qr-wrap"><img src="qr.png" alt="QR code" id="qr-img" style="display:block"></div>
     <div class="qr-url">hutchmoot.jgsongs.com/reflection</div>
     <div class="qr-cta">Scan to share your reflection</div>
   </div>
@@ -238,7 +239,6 @@ textarea.ai { resize: vertical; }
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script>
 // ── State ──────────────────────────────────────────────────────────────────
 let session    = null;
@@ -531,17 +531,6 @@ function esc(str) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
-
-// ── QR code ────────────────────────────────────────────────────────────────
-try {
-  const size = Math.min(Math.floor(window.innerWidth * 0.28), 280);
-  QRCode.toCanvas(
-    document.getElementById('qr-canvas'),
-    'https://hutchmoot.jgsongs.com/reflection',
-    { width: size, margin: 1, color: { dark: '#faf8f5', light: '#0f0f0d' } },
-    function (err) { if (err) console.error('QR error', err); }
-  );
-} catch (e) { console.warn('QR init failed', e); }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 pollSession();
