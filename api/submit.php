@@ -28,7 +28,7 @@ if (empty($_FILES['audio']['tmp_name']) || $_FILES['audio']['error'] !== UPLOAD_
 }
 
 $file = $_FILES['audio'];
-$allowed_types = ['audio/mpeg', 'audio/mp4', 'audio/ogg', 'audio/wav', 'audio/webm', 'audio/x-m4a'];
+$allowed_types = ['audio/mpeg', 'audio/mp4', 'audio/ogg', 'audio/wav', 'audio/webm', 'audio/x-m4a', 'audio/aac', 'audio/3gpp', 'audio/amr'];
 $ct = $file['type'];
 if (!in_array($ct, $allowed_types, true)) {
     // Fallback: check extension

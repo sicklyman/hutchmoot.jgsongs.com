@@ -82,6 +82,9 @@ function r2_content_type(string $filename): string {
     return match($ext) {
         'mp3'  => 'audio/mpeg',
         'm4a'  => 'audio/mp4',
+        'aac'  => 'audio/aac',
+        '3gp'  => 'audio/3gpp',
+        'amr'  => 'audio/amr',
         'ogg'  => 'audio/ogg',
         'wav'  => 'audio/wav',
         'webm' => 'audio/webm',
