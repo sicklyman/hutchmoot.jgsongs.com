@@ -37,7 +37,7 @@ if (!in_array($ct, $allowed_types, true)) {
 }
 
 $ext       = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-$r2_key    = "hutchmoot/submissions/{$slug}." . $ext;
+$r2_key    = "hutchmoot/submissions/{$slug}-" . time() . "." . $ext;
 $audio_url = r2_upload($file['tmp_name'], $r2_key, $ct);
 
 // Upsert: replace existing submission for this artwork
