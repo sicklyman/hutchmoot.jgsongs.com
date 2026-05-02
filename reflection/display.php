@@ -46,7 +46,8 @@ html, body { width: 100%; height: 100%; background: var(--bg); color: var(--text
 }
 .session-chip.on { opacity: 1; }
 #prompt {
-  font-size: clamp(2rem, 3.8vw, 3.2rem); line-height: 1.2; margin-bottom: 1.75rem;
+  font-size: clamp(1.5rem, 2.8vw, 2.4rem); line-height: 1.3; margin-bottom: 1.75rem;
+  font-style: italic; color: #9a8e80;
   opacity: 0; transition: opacity .4s;
 }
 #prompt.on { opacity: 1; }
@@ -58,7 +59,8 @@ html, body { width: 100%; height: 100%; background: var(--bg); color: var(--text
   scrollbar-width: none;
 }
 #feed::-webkit-scrollbar { display: none; }
-.phrase { font-size: clamp(2rem, 3.8vw, 3rem); line-height: 1.3; animation: rise .6s ease-out; }
+.phrase { font-size: clamp(2rem, 3.8vw, 3rem); line-height: 1.3; animation: rise .6s ease-out; transition: opacity 1.5s ease; }
+.phrase.aged { opacity: 0.4; }
 @keyframes rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
 #resp-count { font-family: var(--sans); font-size: .8rem; color: #444; margin-top: .75rem; text-align: right; }
 
@@ -445,7 +447,7 @@ async function loadReviewSession(id) {
     rows.forEach(function (r, i) {
       const div = document.createElement('div');
       div.className = 'ritem';
-      div.textContent = '“' + r.phrase + '”';
+      div.textContent = '"' + r.phrase + '"';
       list.appendChild(div);
       setTimeout(function () { div.classList.add('shown'); }, i * 40);
     });
@@ -489,11 +491,12 @@ function appendToFeed(newItems) {
   for (const p of newItems) {
     const div = document.createElement('div');
     div.className = 'phrase';
-    div.textContent = '”' + p.phrase + '”';
+    div.textContent = '"' + p.phrase + '"';
     feed.appendChild(div);
+    setTimeout(function () { div.classList.add('aged'); }, 5000);
   }
   updateCount();
-  if (atBottom) setTimeout(function () { feed.scrollTop = feed.scrollHeight; }, 60);
+  if (atBottom) setTimeout(function () { feed.scrollTo({ top: feed.scrollHeight, behavior: 'smooth' }); }, 60);
 }
 
 // ── Polling ───────────────────────────────────────────────────────────────────
