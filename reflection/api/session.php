@@ -40,6 +40,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         json_out(['ok' => true]);
     }
 
+    if ($action === 'reset') {
+        db()->exec("DELETE FROM reflect_responses");
+        db()->exec("DELETE FROM reflect_sessions");
+        json_out(['ok' => true]);
+    }
+
     json_error('Unknown action');
 }
 
