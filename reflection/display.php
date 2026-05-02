@@ -20,7 +20,7 @@
 html, body { width: 100%; height: 100%; background: var(--bg); color: var(--text); font-family: var(--font); overflow: hidden; }
 
 /* ── Main layout ── */
-#main { display: grid; grid-template-columns: 38% 62%; height: 100vh; }
+#main { display: grid; grid-template-columns: 24% 76%; height: 100vh; }
 
 /* ── Left: QR ── */
 #left {
@@ -32,7 +32,7 @@ html, body { width: 100%; height: 100%; background: var(--bg); color: var(--text
   border-radius: 12px; border: 2px solid var(--div);
   line-height: 0;
 }
-#qr-img { width: min(28vw, 280px); height: auto; }
+#qr-img { width: min(18vw, 200px); height: auto; }
 .qr-url  { font-family: var(--sans); font-size: clamp(.85rem, 1.4vw, 1.1rem); color: var(--accent); letter-spacing: .03em; text-align: center; }
 .qr-cta  { font-family: var(--sans); font-size: clamp(.75rem, 1.1vw, .9rem); color: var(--muted); text-align: center; }
 
@@ -46,18 +46,20 @@ html, body { width: 100%; height: 100%; background: var(--bg); color: var(--text
 }
 .session-chip.on { opacity: 1; }
 #prompt {
-  font-size: clamp(1.6rem, 3.2vw, 2.6rem); line-height: 1.2; margin-bottom: 1.75rem;
+  font-size: clamp(2rem, 3.8vw, 3.2rem); line-height: 1.2; margin-bottom: 1.75rem;
   opacity: 0; transition: opacity .4s;
 }
 #prompt.on { opacity: 1; }
 #idle-msg { font-size: clamp(1.2rem, 2.5vw, 1.8rem); color: var(--muted); margin-top: 2rem; }
 
-#feed { flex: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; gap: .65rem; }
-.phrase { font-size: clamp(1.4rem, 2.8vw, 2.2rem); line-height: 1.3; animation: rise .5s ease-out; }
-.phrase.age1 { opacity: .65; font-size: clamp(1.1rem, 2.2vw, 1.7rem); }
-.phrase.age2 { opacity: .4;  font-size: clamp(.95rem, 1.8vw, 1.4rem); }
-.phrase.age3 { opacity: .2;  font-size: clamp(.85rem, 1.5vw, 1.2rem); }
-@keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+#feed {
+  flex: 1; overflow-y: auto; display: flex; flex-direction: column;
+  gap: 1rem; padding-bottom: 1rem;
+  scrollbar-width: none;
+}
+#feed::-webkit-scrollbar { display: none; }
+.phrase { font-size: clamp(2rem, 3.8vw, 3rem); line-height: 1.3; animation: rise .6s ease-out; }
+@keyframes rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
 #resp-count { font-family: var(--sans); font-size: .8rem; color: #444; margin-top: .75rem; text-align: right; }
 
 /* ── Admin button ── */
@@ -373,7 +375,7 @@ async function startRound() {
     session = data.session;
     phrases = [];
     lastId  = 0;
-    renderFeed();
+    clearFeed(); renderHeader();
     document.getElementById('rlabel').value  = '';
     document.getElementById('rprompt').value = '';
     refreshStatus();
@@ -395,7 +397,7 @@ async function endRound() {
     });
     session = null;
     refreshStatus();
-    renderFeed();
+    renderHeader();
     closeAdmin();
   } catch {
     document.getElementById('end-btn').disabled = false;
@@ -455,39 +457,43 @@ async function loadReviewSession(id) {
 }
 
 // ── Live feed ────────────────────────────────────────────────────────────────
-function renderFeed() {
+function renderHeader() {
   const chip  = document.getElementById('chip');
   const pText = document.getElementById('prompt');
   const idle  = document.getElementById('idle-msg');
-  const feed  = document.getElementById('feed');
-  const count = document.getElementById('resp-count');
-
   if (session) {
-    chip.textContent = session.label;
-    chip.classList.add('on');
-    pText.textContent = session.prompt;
-    pText.classList.add('on');
+    chip.textContent = session.label; chip.classList.add('on');
+    pText.textContent = session.prompt; pText.classList.add('on');
     idle.style.display = 'none';
   } else {
-    chip.classList.remove('on');
-    pText.classList.remove('on');
+    chip.classList.remove('on'); pText.classList.remove('on');
     idle.style.display = '';
   }
+  updateCount();
+}
 
-  const MAX_VISIBLE = 5;
-  const visible = phrases.slice(-MAX_VISIBLE);
-  feed.innerHTML = '';
-  visible.forEach(function (p, i) {
-    const age = visible.length - 1 - i;
-    const div = document.createElement('div');
-    div.className = 'phrase' + (age >= 3 ? ' age3' : age >= 2 ? ' age2' : age >= 1 ? ' age1' : '');
-    div.textContent = '“' + p.phrase + '”';
-    feed.appendChild(div);
-  });
-
-  count.textContent = phrases.length
+function updateCount() {
+  document.getElementById('resp-count').textContent = phrases.length
     ? phrases.length + (phrases.length === 1 ? ' response' : ' responses')
     : '';
+}
+
+function clearFeed() {
+  document.getElementById('feed').innerHTML = '';
+}
+
+function appendToFeed(newItems) {
+  if (!newItems.length) return;
+  const feed = document.getElementById('feed');
+  const atBottom = feed.scrollHeight - feed.scrollTop - feed.clientHeight < 80;
+  for (const p of newItems) {
+    const div = document.createElement('div');
+    div.className = 'phrase';
+    div.textContent = '”' + p.phrase + '”';
+    feed.appendChild(div);
+  }
+  updateCount();
+  if (atBottom) setTimeout(function () { feed.scrollTop = feed.scrollHeight; }, 60);
 }
 
 // ── Polling ───────────────────────────────────────────────────────────────────
@@ -501,11 +507,11 @@ async function pollSession() {
         session = data.session;
         phrases = [];
         lastId  = 0;
-        renderFeed();
+        clearFeed(); renderHeader();
       }
     } else if (session) {
       session = null;
-      renderFeed();
+      renderHeader();
     }
   } catch {}
 }
@@ -521,7 +527,7 @@ async function pollResponses() {
         phrases.push(r);
         if (r.id > lastId) lastId = r.id;
       }
-      renderFeed();
+      appendToFeed(rows);
     }
   } catch {}
 }
