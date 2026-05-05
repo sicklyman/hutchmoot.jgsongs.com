@@ -55,34 +55,38 @@ if ($method === 'POST') {
         json_error('Slug must be lowercase letters, numbers and hyphens only');
     }
 
-    $image_url = null;
-    if (!empty($_FILES['image']['tmp_name'])) {
-        $file = $_FILES['image'];
-        $ext  = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        $key  = "hutchmoot/examples/{$slug}-image.{$ext}";
-        $image_url = r2_upload($file['tmp_name'], $key, r2_content_type($file['name']));
-    }
+    try {
+        $image_url = null;
+        if (!empty($_FILES['image']['tmp_name'])) {
+            $file = $_FILES['image'];
+            $ext  = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            $key  = "hutchmoot/examples/{$slug}-image.{$ext}";
+            $image_url = r2_upload($file['tmp_name'], $key, r2_content_type($file['name']));
+        }
 
-    $audio_url = null;
-    if (!empty($_FILES['audio']['tmp_name'])) {
-        $file = $_FILES['audio'];
-        $ext  = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        $key  = "hutchmoot/examples/{$slug}-audio.{$ext}";
-        $audio_url = r2_upload($file['tmp_name'], $key, r2_content_type($file['name']));
-    }
+        $audio_url = null;
+        if (!empty($_FILES['audio']['tmp_name'])) {
+            $file = $_FILES['audio'];
+            $ext  = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            $key  = "hutchmoot/examples/{$slug}-audio.{$ext}";
+            $audio_url = r2_upload($file['tmp_name'], $key, r2_content_type($file['name']));
+        }
 
-    if ($id) {
-        $sets   = 'title=?, description=?, sort_order=?';
-        $params = [$title, $description ?: null, $sort_order];
-        if ($image_url) { $sets .= ', image_url=?'; $params[] = $image_url; }
-        if ($audio_url) { $sets .= ', audio_url=?'; $params[] = $audio_url; }
-        $params[] = $id;
-        db()->prepare("UPDATE examples SET {$sets} WHERE id=?")->execute($params);
-    } else {
-        db()->prepare(
-            "INSERT INTO examples (slug, title, image_url, audio_url, description, sort_order) VALUES (?,?,?,?,?,?)"
-        )->execute([$slug, $title, $image_url, $audio_url, $description ?: null, $sort_order]);
-        $id = (int)db()->lastInsertId();
+        if ($id) {
+            $sets   = 'title=?, description=?, sort_order=?';
+            $params = [$title, $description ?: null, $sort_order];
+            if ($image_url) { $sets .= ', image_url=?'; $params[] = $image_url; }
+            if ($audio_url) { $sets .= ', audio_url=?'; $params[] = $audio_url; }
+            $params[] = $id;
+            db()->prepare("UPDATE examples SET {$sets} WHERE id=?")->execute($params);
+        } else {
+            db()->prepare(
+                "INSERT INTO examples (slug, title, image_url, audio_url, description, sort_order) VALUES (?,?,?,?,?,?)"
+            )->execute([$slug, $title, $image_url, $audio_url, $description ?: null, $sort_order]);
+            $id = (int)db()->lastInsertId();
+        }
+    } catch (Exception $e) {
+        json_error($e->getMessage(), 500);
     }
 
     json_out(['ok' => true, 'id' => $id]);
