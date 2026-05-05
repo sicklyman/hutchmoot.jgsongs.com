@@ -14,7 +14,7 @@ if ($method === 'GET') {
 
     if ($slug) {
         $rows = db()->query(
-            "SELECT id, slug, title, image_url, audio_url, description, sort_order FROM examples ORDER BY sort_order, id"
+            "SELECT id, slug, title, image_url, audio_url, description, lyrics, sort_order FROM examples ORDER BY sort_order, id"
         )->fetchAll();
 
         $idx = null;
@@ -35,7 +35,7 @@ if ($method === 'GET') {
     }
 
     $rows = db()->query(
-        "SELECT id, slug, title, image_url, audio_url, description, sort_order FROM examples ORDER BY sort_order, id"
+        "SELECT id, slug, title, image_url, audio_url, description, lyrics, sort_order FROM examples ORDER BY sort_order, id"
     )->fetchAll();
     json_out($rows);
 }
@@ -47,6 +47,7 @@ if ($method === 'POST') {
     $slug        = trim($_POST['slug'] ?? '');
     $title       = trim($_POST['title'] ?? '');
     $description = trim($_POST['description'] ?? '');
+    $lyrics      = trim($_POST['lyrics'] ?? '') ?: null;
     $sort_order  = (int)($_POST['sort_order'] ?? 0);
 
     if (!$slug)  json_error('slug required');
@@ -73,16 +74,16 @@ if ($method === 'POST') {
         }
 
         if ($id) {
-            $sets   = 'title=?, description=?, sort_order=?';
-            $params = [$title, $description ?: null, $sort_order];
+            $sets   = 'title=?, description=?, lyrics=?, sort_order=?';
+            $params = [$title, $description ?: null, $lyrics, $sort_order];
             if ($image_url) { $sets .= ', image_url=?'; $params[] = $image_url; }
             if ($audio_url) { $sets .= ', audio_url=?'; $params[] = $audio_url; }
             $params[] = $id;
             db()->prepare("UPDATE examples SET {$sets} WHERE id=?")->execute($params);
         } else {
             db()->prepare(
-                "INSERT INTO examples (slug, title, image_url, audio_url, description, sort_order) VALUES (?,?,?,?,?,?)"
-            )->execute([$slug, $title, $image_url, $audio_url, $description ?: null, $sort_order]);
+                "INSERT INTO examples (slug, title, image_url, audio_url, description, lyrics, sort_order) VALUES (?,?,?,?,?,?,?)"
+            )->execute([$slug, $title, $image_url, $audio_url, $description ?: null, $lyrics, $sort_order]);
             $id = (int)db()->lastInsertId();
         }
     } catch (Exception $e) {
