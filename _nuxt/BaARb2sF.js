@@ -1,1 +1,0 @@
-import{X as a,l as n}from"./R6-8SL0k.js";const c=a("timeGate",{state:()=>({open:!1,isAdmin:!1,loaded:!1}),actions:{async fetch(e){const i=n();try{const t={};e&&(t["X-Admin-Pin"]=e);const s=await $fetch(`${i.public.apiBase}/time-check.php`,{headers:t});this.open=s.open,this.isAdmin=s.admin}catch{this.open=!1,this.isAdmin=!1}finally{this.loaded=!0}}}});export{c as u};
