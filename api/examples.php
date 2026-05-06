@@ -61,7 +61,7 @@ if ($method === 'POST') {
         if (!empty($_FILES['image']['tmp_name'])) {
             $file = $_FILES['image'];
             $ext  = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-            $key  = "hutchmoot/examples/{$slug}-image.{$ext}";
+            $key  = "hutchmoot/examples/{$slug}-image-" . time() . ".{$ext}";
             $image_url = r2_upload($file['tmp_name'], $key, r2_content_type($file['name']));
         }
 
@@ -69,7 +69,7 @@ if ($method === 'POST') {
         if (!empty($_FILES['audio']['tmp_name'])) {
             $file = $_FILES['audio'];
             $ext  = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-            $key  = "hutchmoot/examples/{$slug}-audio.{$ext}";
+            $key  = "hutchmoot/examples/{$slug}-audio-" . time() . ".{$ext}";
             $audio_url = r2_upload($file['tmp_name'], $key, r2_content_type($file['name']));
         }
 
