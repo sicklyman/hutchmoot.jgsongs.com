@@ -20,9 +20,6 @@ define('R2_PUBLIC_URL', getenv('R2_PUBLIC_URL') ?: '');
 define('ADMIN_PIN',  getenv('ADMIN_PIN')  ?: '');
 define('SUBMIT_PIN', getenv('SUBMIT_PIN') ?: '');
 
-define('GATE_OPEN_TIME', getenv('GATE_OPEN_TIME') ?: '2026-05-08 15:30:00');
-define('GATE_TIMEZONE',  getenv('GATE_TIMEZONE')  ?: 'Europe/London');
-
 function cors_headers(): void {
     header('Content-Type: application/json; charset=utf-8');
     header('Access-Control-Allow-Origin: *');
@@ -54,8 +51,12 @@ function require_admin(): void {
 }
 
 function gate_open(): bool {
-    $tz   = new DateTimeZone(GATE_TIMEZONE);
-    $now  = new DateTime('now', $tz);
-    $gate = new DateTime(GATE_OPEN_TIME, $tz);
-    return $now >= $gate;
+    try {
+        $stmt = db()->prepare("SELECT body FROM content WHERE page_key = 'site_live' LIMIT 1");
+        $stmt->execute();
+        $row = $stmt->fetch();
+        return ($row['body'] ?? '0') === '1';
+    } catch (Throwable $e) {
+        return false;
+    }
 }
