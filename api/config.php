@@ -17,8 +17,9 @@ define('R2_SECRET_KEY', getenv('R2_SECRET_KEY') ?: '');
 define('R2_BUCKET',     getenv('R2_BUCKET')     ?: 'jgsongs');
 define('R2_PUBLIC_URL', getenv('R2_PUBLIC_URL') ?: '');
 
-define('ADMIN_PIN',  getenv('ADMIN_PIN')  ?: '');
-define('SUBMIT_PIN', getenv('SUBMIT_PIN') ?: '');
+define('ADMIN_PIN',   getenv('ADMIN_PIN')   ?: '');
+define('SUBMIT_PIN',  getenv('SUBMIT_PIN')  ?: '');
+define('PREVIEW_PIN', getenv('PREVIEW_PIN') ?: '110772');
 
 function cors_headers(): void {
     header('Content-Type: application/json; charset=utf-8');
@@ -44,6 +45,11 @@ function json_error(string $message, int $code = 400): void {
 function is_admin(): bool {
     $pin = $_SERVER['HTTP_X_ADMIN_PIN'] ?? '';
     return !empty(ADMIN_PIN) && hash_equals(ADMIN_PIN, $pin);
+}
+
+function is_preview(): bool {
+    $pin = $_SERVER['HTTP_X_PREVIEW_PIN'] ?? '';
+    return !empty(PREVIEW_PIN) && hash_equals(PREVIEW_PIN, $pin);
 }
 
 function require_admin(): void {

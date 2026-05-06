@@ -8,7 +8,7 @@ cors_headers();
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
-    if (!gate_open() && !is_admin()) json_error('Content not yet available', 403);
+    if (!gate_open() && !is_admin() && !is_preview()) json_error('Content not yet available', 403);
 
     $slug = trim($_GET['slug'] ?? '');
 
