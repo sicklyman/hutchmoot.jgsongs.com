@@ -29,4 +29,10 @@ if ($method === 'POST') {
     json_out(['ok' => true, 'image_url' => $image_url]);
 }
 
+if ($method === 'DELETE') {
+    require_admin();
+    db()->prepare("DELETE FROM content WHERE page_key = 'location_image'")->execute();
+    json_out(['ok' => true]);
+}
+
 json_error('Method not allowed', 405);
