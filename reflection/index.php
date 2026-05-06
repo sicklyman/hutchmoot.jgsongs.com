@@ -99,7 +99,7 @@
 <div class="card">
 
   <div id="waiting">
-    <h2>The next round will begin soon.</h2>
+    <h2>We'll begin soon.</h2>
     <p>Watch the screen.</p>
     <div class="dot"></div>
   </div>

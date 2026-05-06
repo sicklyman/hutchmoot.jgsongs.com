@@ -169,7 +169,7 @@ textarea.ai { resize: vertical; }
   <div id="right">
     <div class="session-chip" id="chip"></div>
     <div id="prompt"></div>
-    <div id="idle-msg">Waiting for the next round…</div>
+    <div id="idle-msg">Waiting to begin…</div>
     <div id="feed"></div>
     <div id="resp-count"></div>
   </div>
@@ -207,11 +207,9 @@ textarea.ai { resize: vertical; }
       <div class="lbl">Prompt</div>
       <textarea class="ai" id="rprompt" rows="3" maxlength="300" placeholder="Type a prompt, or choose one below…"></textarea>
 
-      <div class="lbl" style="margin-bottom:.4rem">Quick prompts</div>
+      <div class="lbl" style="margin-bottom:.4rem">Reset prompt</div>
       <div class="presets">
-        <button class="preset" onclick="usePreset(0)">A word or phrase for what the songwriting felt like.</button>
-        <button class="preset" onclick="usePreset(1)">What moved you in the songs you heard today?</button>
-        <button class="preset" onclick="usePreset(2)">What will you carry away from this workshop?</button>
+        <button class="preset" onclick="usePreset(0)">What did the discipline give you?</button>
       </div>
 
       <button class="bp" id="start-btn" onclick="startRound()" style="width:100%;margin-bottom:1rem">Start round</button>
@@ -253,9 +251,7 @@ let adminPin   = '';
 let allSessions = [];
 
 const PRESETS = [
-  'A word or phrase for what the songwriting felt like.',
-  'What moved you in the songs you heard today?',
-  'What will you carry away from this workshop?',
+  'What did the discipline give you?',
 ];
 
 // ── Keyboard shortcuts ──────────────────────────────────────────────────────
@@ -332,9 +328,11 @@ function showCtrl() {
   document.getElementById('ctrl-panel').style.display = '';
   document.getElementById('ctrl-err').textContent = '';
   refreshStatus();
-  const next = (session ? session.id : 0) + 1;
   if (!document.getElementById('rlabel').value) {
-    document.getElementById('rlabel').value = 'Round ' + next;
+    document.getElementById('rlabel').value = 'Reflection';
+  }
+  if (!document.getElementById('rprompt').value) {
+    document.getElementById('rprompt').value = PRESETS[0];
   }
 }
 
